@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SoulsFormats;
 using SoulsAssetPipeline.Animation;
@@ -109,6 +109,11 @@ namespace DSAnimStudio.TaeEditor
 
         //TODO: Make this prevent selection changing while editing stuff (affects: Ctrl+A, maybe more)
         public bool CanChangeSelectionRightNow = true;
+
+        public bool RequestContextMenu = false;
+        public int ContextMenuTrackIndex = -1;
+        public DSAProj.Action ContextMenuAction = null;
+        public Vector2 ContextMenuMousePos = Vector2.Zero;
 
         public NewGraphLayoutManager LayoutManager;
         public NewGraphDrawer Drawer;
