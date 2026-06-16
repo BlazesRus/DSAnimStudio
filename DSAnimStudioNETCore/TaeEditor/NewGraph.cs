@@ -111,6 +111,7 @@ namespace DSAnimStudio.TaeEditor
         public bool CanChangeSelectionRightNow = true;
 
         public bool RequestContextMenu = false;
+        public bool ContextMenuOpen = false;
         public int ContextMenuTrackIndex = -1;
         public DSAProj.Action ContextMenuAction = null;
         public Vector2 ContextMenuMousePos = Vector2.Zero;

@@ -220,6 +220,13 @@ namespace DSAnimStudio.TaeEditor
 
         public void UpdateCurrentDrag(FancyInputHandler input, float deltaTime, bool isReadOnly, bool forceReleaseDrag)
         {
+            if (Graph.ContextMenuOpen)
+            {
+                input.LeftClickDown = false;
+                input.RightClickDown = false;
+                forceReleaseDrag = true;
+            }
+
             var safetyRect = new Rectangle(Graph.WholeScrollViewerRect.X,
                 Graph.WholeScrollViewerRect.Y - Graph.TimeLineHeight,
                 Graph.WholeScrollViewerRect.Width - Graph.ScrollViewer.ScrollBarThickness,

@@ -79,6 +79,7 @@ namespace DSAnimStudio.ImguiOSD
 
                 if (ImGui.BeginPopup("GraphContextMenu"))
                 {
+                    graph.ContextMenuOpen = true;
                     int trackIndex = graph.ContextMenuTrackIndex;
                     var clickedAction = graph.ContextMenuAction;
                     var anim = graph.AnimRef;
@@ -279,6 +280,10 @@ namespace DSAnimStudio.ImguiOSD
                     }
 
                     ImGui.EndPopup();
+                }
+                else
+                {
+                    graph.ContextMenuOpen = false;
                 }
             }
         }
