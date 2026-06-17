@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DSAnimStudio;
@@ -60,7 +61,7 @@ namespace DSAnimStudio.TaeEditor.TaeScripting
             ("RBRACKET",  @"\]"),
             ("LPAREN",    @"\("),
             ("RPAREN",    @"\)"),
-            ("NUMBER",    @"\d+"),
+            ("NUMBER",    @"\d+(?:\.\d+)?"),
             ("IDENT",     @"[a-zA-Z_][a-zA-Z0-9_<>\-]*"),
         };
 
@@ -386,7 +387,7 @@ namespace DSAnimStudio.TaeEditor.TaeScripting
             if (tok.Type == "NUMBER")
             {
                 Consume("NUMBER");
-                double val = double.Parse(tok.Value);
+                double val = double.Parse(tok.Value, CultureInfo.InvariantCulture);
                 if (minus) val = -val;
                 return new LiteralNode { Value = val };
             }
@@ -543,7 +544,7 @@ namespace DSAnimStudio.TaeEditor.TaeScripting
             if (sign != null)
             {
                 var num = Consume("NUMBER", "Expected number after +/- sign");
-                int val = int.Parse(num.Value);
+                int val = (int)double.Parse(num.Value, CultureInfo.InvariantCulture);
                 if (sign.Type == "MINUS")
                     val = -val;
                 return val;
@@ -556,7 +557,7 @@ namespace DSAnimStudio.TaeEditor.TaeScripting
             bool minus = Match("MINUS") != null;
             Match("PLUS"); // match optional plus
             var num = Consume("NUMBER", "Expected offset integer");
-            int val = int.Parse(num.Value);
+            int val = (int)double.Parse(num.Value, CultureInfo.InvariantCulture);
             if (minus)
                 val = -val;
             return val;
@@ -658,7 +659,7 @@ namespace DSAnimStudio.TaeEditor.TaeScripting
             if (tok.Type == "NUMBER")
             {
                 Consume("NUMBER");
-                double val = double.Parse(tok.Value);
+                double val = double.Parse(tok.Value, CultureInfo.InvariantCulture);
                 return new LiteralNode { Value = minus ? -val : val };
             }
 
@@ -702,13 +703,13 @@ namespace DSAnimStudio.TaeEditor.TaeScripting
             else if (tok != null && tok.Type == "NUMBER")
             {
                 Consume("NUMBER");
-                return new LiteralNode { Value = double.Parse(tok.Value) };
+                return new LiteralNode { Value = double.Parse(tok.Value, CultureInfo.InvariantCulture) };
             }
             else
             {
                 bool minus = Match("MINUS") != null;
                 var num = Consume("NUMBER", "Expected number or M");
-                double val = double.Parse(num.Value);
+                double val = double.Parse(num.Value, CultureInfo.InvariantCulture);
                 return new LiteralNode { Value = minus ? -val : val };
             }
         }
@@ -1050,14 +1051,17 @@ namespace DSAnimStudio.TaeEditor.TaeScripting
 
             byte[] defaultBytes = evTemplate != null ? evTemplate.GetDefaultBytes() : new byte[16];
 
-            int trackIdx = 0;
-            var existingActions = anim.SAFE_GetActions();
-            while (existingActions.Any(a => a.TrackIndex == trackIdx && !(e <= a.StartTime || s >= a.EndTime)))
-            {
-                trackIdx++;
-            }
-
+            // Always append a brand-new track
+            int trackIdx = anim.SAFE_GetActionTrackCount();
             anim.SAFE_EnsureMinimumActionTrackCount(trackIdx + 1);
+
+            // Name the new track after the action's template name
+            var newTrack = anim.SAFE_GetActionTrackByIndex(trackIdx);
+            if (newTrack != null)
+            {
+                string trackName = evTemplate?.Name ?? eventType.ToString();
+                newTrack.Info.DisplayName = trackName;
+            }
 
             var newAct = new DSAProj.Action()
             {
