@@ -1,4 +1,4 @@
-﻿using ImGuiNET;
+using ImGuiNET;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -19,6 +19,7 @@ namespace DSAnimStudio.ImguiOSD
                 isAnyMenuExpanded = true;
 
                 DoWindow(OSD.WindowComboViewer, "F8");
+                DoWindow(OSD.WindowTaeScriptEditor, "F9");
 
 
                 if (Main.IsDebugBuild)

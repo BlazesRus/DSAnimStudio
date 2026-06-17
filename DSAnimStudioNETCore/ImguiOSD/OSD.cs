@@ -1,4 +1,4 @@
-﻿using DSAnimStudio.TaeEditor;
+using DSAnimStudio.TaeEditor;
 using ImGuiNET;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -195,6 +195,7 @@ namespace DSAnimStudio.ImguiOSD
 
 
         public static Window.NewComboViewer WindowComboViewer = new Window.NewComboViewer();
+        public static Window.TaeScriptEditor WindowTaeScriptEditor = new Window.TaeScriptEditor();
         public static Window.Find WindowFind = new Window.Find();
 
         public static Window.Project WindowProject = new Window.Project();
@@ -472,6 +473,9 @@ namespace DSAnimStudio.ImguiOSD
                     SpWindowNotifications.Update(ref actualFocusedWindow, ref anyFieldFocused);
 
                     WindowComboViewer.Update(ref actualFocusedWindow, ref currentFocusedWindow, ref anyWindowHovered,
+                        ref anyFieldFocused);
+
+                    WindowTaeScriptEditor.Update(ref actualFocusedWindow, ref currentFocusedWindow, ref anyWindowHovered,
                         ref anyFieldFocused);
 
                     WindowFind.Update(ref actualFocusedWindow, ref currentFocusedWindow, ref anyWindowHovered,
