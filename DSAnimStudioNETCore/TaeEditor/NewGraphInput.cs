@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using SoulsAssetPipeline.Animation;
 using System;
 using System.Collections.Generic;
@@ -220,10 +220,60 @@ namespace DSAnimStudio.TaeEditor
 
         public void UpdateCurrentDrag(FancyInputHandler input, float deltaTime, bool isReadOnly, bool forceReleaseDrag)
         {
+            if (Graph.ContextMenuOpen)
+            {
+                input.LeftClickDown = false;
+                input.RightClickDown = false;
+                forceReleaseDrag = true;
+            }
+
             var safetyRect = new Rectangle(Graph.WholeScrollViewerRect.X,
                 Graph.WholeScrollViewerRect.Y - Graph.TimeLineHeight,
                 Graph.WholeScrollViewerRect.Width - Graph.ScrollViewer.ScrollBarThickness,
                 Graph.WholeScrollViewerRect.Height + Graph.TimeLineHeight - Graph.ScrollViewer.ScrollBarThickness);
+
+            if (!forceReleaseDrag && !OSD.Hovered && input.RightClickDown)
+            {
+                if (Graph.Rect.Contains(input.MousePositionPoint) && !MenuBar.IsAnyMenuOpen && !DialogManager.AnyDialogsShowing)
+                {
+                    float relativeY = input.MousePosition.Y - (Graph.Rect.Y + Graph.TimeLineHeight + NewGraph.SpacingMeme) + Graph.ScrollViewer.RoundedScroll.Y;
+                    int trackIndex = (int)Math.Floor(relativeY / Graph.LayoutManager.RowHeight);
+                    int trackCount = Graph.AnimRef.SAFE_GetActionTrackCount();
+                    if (trackIndex < 0 || trackIndex >= trackCount)
+                    {
+                        trackIndex = -1;
+                    }
+
+                    DSAProj.Action clickedAction = null;
+                    if (trackIndex >= 0)
+                    {
+                        float mouseXInTimeline = input.MousePosition.X - (Graph.Rect.X + Graph.ActionTrackNamePaneEffectiveWidth + NewGraph.SpacingMeme) + Graph.ScrollViewer.RoundedScroll.X;
+                        float mouseTime = mouseXInTimeline / Graph.LayoutManager.SecondsPixelSize;
+
+                        var actionsOnTrack = Graph.AnimRef.SAFE_GetActions().Where(a => a.TrackIndex == trackIndex);
+                        foreach (var act in actionsOnTrack)
+                        {
+                            if (mouseTime >= act.StartTime && mouseTime <= act.EndTime)
+                            {
+                                clickedAction = act;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (clickedAction != null)
+                    {
+                        Graph.ViewportInteractor.ActionSim.NewSimulation_DoRightClick(clickedAction);
+                    }
+
+                    Graph.RequestContextMenu = true;
+                    Graph.ContextMenuTrackIndex = trackIndex;
+                    Graph.ContextMenuAction = clickedAction;
+                    Graph.ContextMenuMousePos = input.MousePosition;
+
+                    input.RightClickDown = false; // Consume right click
+                }
+            }
 
             if (OSD.Hovered)
             {

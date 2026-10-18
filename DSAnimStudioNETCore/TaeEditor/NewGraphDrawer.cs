@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SoulsAssetPipeline.Animation;
 using System;
@@ -579,7 +579,7 @@ namespace DSAnimStudio.TaeEditor
                     
                     if (Graph.MainScreen.NewHoverAction_NeedsNoSelection != null && Main.Config.ShowActionTooltips 
                         && !MenuBar.IsAnyMenuOpen && !DialogManager.AnyDialogsShowing && (Graph.PlaybackCursor?.IsPlaying == false)
-                        && !OSD.Hovered)
+                        && !OSD.Hovered && !Graph.ContextMenuOpen)
                     {
                         Graph.MainScreen.NewHoverAction_NeedsNoSelection?.CheckUpdateText();
                         OSD.TooltipManager_GraphActions.DoTooltipManual($"ActionHover", Graph.MainScreen.NewHoverAction_NeedsNoSelection.TooltipDisplayText, true);
